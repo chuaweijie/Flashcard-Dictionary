@@ -18,8 +18,16 @@ function textSelection() {
   //Handle the exception if the selected text is undefined. 
   if (selectedText == undefined) {
     var sel = window.getSelection();
-    var selectedText = sel.toString();
+    selectedText = sel.toString();
   }
-
-  console.log(selectedText);
+  
+  if(selectedText != "" && selectedText != ''){
+    console.log("Selected text: " + selectedText);
+  }
 }
+
+document.onmouseup = document.onkeyup = function() {
+  textSelection();
+};
+
+console.log("content_script.js loaded");

@@ -7,3 +7,5 @@ if (localStorage['lastVersionUsed'] != '1') {
     url: chrome.extension.getURL('options.html')
   });
 }
+
+console.log("Background.js loaded");
