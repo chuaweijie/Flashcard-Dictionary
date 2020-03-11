@@ -32,7 +32,7 @@ function textSelection() {
   if(selectedText != "" && selectedText != ''){
     var info = getSelectionInfo();
     if(bubbleDiv == null){
-      bubbleDiv = createDiv(info);
+      bubbleDiv = createDiv(info, selectedText);
     }
     console.log(bubbleDiv);
     wordLookup(selectedText);
@@ -68,10 +68,8 @@ function appendToDiv(content){
   for (const [pos, val] of Object.entries(wordDefObj[0].meaning)) {
     //This is the parts of speech. Eg: verb, noun and exact
     console.log(pos);
-    val.forEach(function(item2){
-      bubbleDiv.meaning.textContent = item2.definition;
-      console.log("Example: "+item2.example);
-    })
+    bubbleDiv.meaning.textContent = val[0].definition;
+    console.log("Example: "+val[0].example);
   }
   //bubbleDiv.meaning.textContent = wordDefObj[0].noun.meaning.definition;
   bubbleDiv.moreInfo.textContent = "More »";
@@ -139,7 +137,7 @@ function getSelectionCoords(selection) {
   return oRect;
 }
 
-function createDiv(info) {
+function createDiv(info, selectedText) {
 
   // Create the div to hold the "bubble pop up."
   var hostDiv = document.createElement("div");
@@ -193,6 +191,7 @@ function createDiv(info) {
 
   //Link for users to go for more information
   var moreInfo =document.createElement("a");
+  moreInfo.href = `https://www.google.com/search?hl=en&q=define+${selectedText}`;
   moreInfo.style = "float: right; text-decoration: none;"
   moreInfo.target = "_blank";
 
@@ -225,7 +224,7 @@ function createDiv(info) {
 }
 
 //The event that will trigger the textSelection function which will process the selected vocabularies. 
-document.onmouseup = document.onkeyup = function() {
+document.onmouseup = function() {
   textSelection();
 };
 
