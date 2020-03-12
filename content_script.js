@@ -2,7 +2,6 @@
 var bubbleDiv = null;
 
 //This funciton will be called when users select the text. It will handle false alarms when users just simply click and selects nothing. 
-//A portion of this code 
 function textSelection() {
   //Get the html element that is in focus. 
   var focused = document.activeElement;
@@ -22,20 +21,19 @@ function textSelection() {
   if (selectedText == undefined) {
     selectedText = window.getSelection().toString();
   }
-
-  document.querySelectorAll(".dictionaryDiv").forEach(function(Node){
-    Node.remove();
-  });
-  bubbleDiv = null;
   
   //Only trigger text look up if there are words selected
-  if(selectedText != "" && selectedText != ''){
+  if(selectedText != "" && selectedText != '' && bubbleDiv == null){
     var info = getSelectionInfo();
-    if(bubbleDiv == null){
-      bubbleDiv = createDiv(info, selectedText);
-    }
-    console.log(bubbleDiv);
+    bubbleDiv = createDiv(info, selectedText);
     wordLookup(selectedText);
+  }
+  else{
+    //Code to dimiss the pop up bubble
+    document.querySelectorAll(".dictionaryDiv").forEach(function(Node){
+      Node.remove();
+    });
+    bubbleDiv = null;
   }
 }
 
@@ -44,10 +42,10 @@ function wordLookup(vocab){
 
   //The base link. This should change when I programme the system to handle multiple dictionaries. 
   var link = "https://api.dictionaryapi.dev/api/v1/entries/en/" + vocab;
-  console.log(link);
   
   //The request to handle the call to 
   var xhttp = new XMLHttpRequest();
+
   //What to do after a the definition is loaded
   xhttp.onload = function() {
     appendToDiv(this.responseText);
@@ -64,34 +62,36 @@ function appendToDiv(content){
   var popupDiv = bubbleDiv.heading.getRootNode().querySelectorAll("div")[1];
   var heightBefore = popupDiv.clientHeight;
 
-  //console.log(wordDefObj);
-
-  //Start of attaching the returned data to bubbleDiv
-  bubbleDiv.heading.textContent = wordDefObj[0].word;
-  bubbleDiv.phonetic.textContent = wordDefObj[0].phonetic;
-  console.log(wordDefObj[0].phonetic);
-  
-  //The method to get the first meaning object when the name might be different in the JSON. 
-  let meaning = Object.entries(wordDefObj[0].meaning);
-  console.log(meaning);
-  bubbleDiv.pos.textContent = meaning[0][0];
-  console.log(meaning[0][0]);
-
-  //loop to ensure that the exception of defininition doesn't always exist in the first instance. 
-  let i = 0;
-  while(true){
-    if(meaning[0][1][i].definition != undefined){
-      bubbleDiv.meaning.textContent = meaning[0][1][i].definition;
-      console.log(meaning[0][1][i].definition);
-      break;
-    }
-    else{
-      i++
-    }
+  //Check if the return is of the error message
+  if(wordDefObj.hasOwnProperty('title')){
+    bubbleDiv.heading.textContent = "Sorry";
+    bubbleDiv.meaning.textContent = "No definition found.";
   }
+  else{
+    //Start of attaching the returned data to bubbleDiv
+    bubbleDiv.heading.textContent = wordDefObj[0].word;
+    bubbleDiv.phonetic.textContent = wordDefObj[0].phonetic;
+    
+    //The method to get the first meaning object when the name might be different in the JSON. 
+    let meaning = Object.entries(wordDefObj[0].meaning);
+    bubbleDiv.pos.textContent = meaning[0][0];
 
-  bubbleDiv.moreInfo.textContent = "More »";
+    //loop to ensure that the exception of defininition doesn't always exist in the first instance. 
+    let i = 0;
+    while(true){
+      if(meaning[0][1][i].definition != undefined){
+        bubbleDiv.meaning.textContent = meaning[0][1][i].definition;
+        break;
+      }
+      else{
+        i++;
+      }
+    }
 
+    //add text for user to click link to the source of the definition
+    bubbleDiv.moreInfo.textContent = "More »";  
+  }
+  
   var heightAfter = popupDiv.clientHeight;
   var difference = heightAfter - heightBefore;
 
@@ -151,6 +151,7 @@ function createDiv(info, selectedText) {
   //Code to create the shadow under the "bubble pop up"
   var shadow = hostDiv.shadowRoot;
   var style = document.createElement("style");
+
   //It is the same style context. Separating line for ease of reading and editing
   style.textContent = ".mwe-popups{background:#fff;position:absolute;z-index:110;-webkit-box-shadow:0 30px 90px -20px rgba(0,0,0,0.3),0 0 1px #a2a9b1;box-shadow:0 30px 90px -20px rgba(0,0,0,0.3),0 0 1px #a2a9b1;padding:0;font-size:14px;min-width:300px;border-radius:2px}";
   style.textContent = style.textContent + ".mwe-popups .mwe-popups-is-not-tall{width:320px}";
@@ -246,8 +247,6 @@ function createDiv(info, selectedText) {
 }
 
 //The event that will trigger the textSelection function which will process the selected vocabularies. 
-document.onmouseup = function() {
+document.onclick = function() {
   textSelection();
 };
-
-console.log("content_script.js loaded");
