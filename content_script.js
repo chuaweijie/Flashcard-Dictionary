@@ -62,16 +62,34 @@ function appendToDiv(content){
   var wordDefObj = JSON.parse(content);
   var hostDiv = bubbleDiv.heading.getRootNode().host;
   var popupDiv = bubbleDiv.heading.getRootNode().querySelectorAll("div")[1];
-
   var heightBefore = popupDiv.clientHeight;
+
+  //console.log(wordDefObj);
+
+  //Start of attaching the returned data to bubbleDiv
   bubbleDiv.heading.textContent = wordDefObj[0].word;
-  for (const [pos, val] of Object.entries(wordDefObj[0].meaning)) {
-    //This is the parts of speech. Eg: verb, noun and exact
-    console.log(pos);
-    bubbleDiv.meaning.textContent = val[0].definition;
-    console.log("Example: "+val[0].example);
+  bubbleDiv.phonetic.textContent = wordDefObj[0].phonetic;
+  console.log(wordDefObj[0].phonetic);
+  
+  //The method to get the first meaning object when the name might be different in the JSON. 
+  let meaning = Object.entries(wordDefObj[0].meaning);
+  console.log(meaning);
+  bubbleDiv.pos.textContent = meaning[0][0];
+  console.log(meaning[0][0]);
+
+  //loop to ensure that the exception of defininition doesn't always exist in the first instance. 
+  let i = 0;
+  while(true){
+    if(meaning[0][1][i].definition != undefined){
+      bubbleDiv.meaning.textContent = meaning[0][1][i].definition;
+      console.log(meaning[0][1][i].definition);
+      break;
+    }
+    else{
+      i++
+    }
   }
-  //bubbleDiv.meaning.textContent = wordDefObj[0].noun.meaning.definition;
+
   bubbleDiv.moreInfo.textContent = "More »";
 
   var heightAfter = popupDiv.clientHeight;
@@ -81,22 +99,6 @@ function appendToDiv(content){
   if(popupDiv.classList.contains("flipped_y")){
       hostDiv.style.top = parseInt(hostDiv.style.top) - difference + 1 + "px";
   }
-  
-  /* // This is the code where I used to acces the definitions in the JSON. 
-  console.log(wordDefObj); //Uncomment this to check the returned JSON
-  //Iterate through the JSON object to get everything inside
-  wordDefObj.forEach(function(item){
-    console.log("Word :"+item.word);
-    console.log("Phonetic :"+item.phonetic);
-    for (const [pos, val] of Object.entries(item.meaning)) {
-      //This is the parts of speech. Eg: verb, noun and exact
-      console.log(pos);
-      val.forEach(function(item2){
-        console.log("Definition: "+item2.definition);
-        console.log("Example: "+item2.example);
-      })
-    }
-  })*/
 }
 
 //Function to get the exact position of the word(s) highlighted
@@ -149,7 +151,18 @@ function createDiv(info, selectedText) {
   //Code to create the shadow under the "bubble pop up"
   var shadow = hostDiv.shadowRoot;
   var style = document.createElement("style");
-  style.textContent = ".mwe-popups{background:#fff;position:absolute;z-index:110;-webkit-box-shadow:0 30px 90px -20px rgba(0,0,0,0.3),0 0 1px #a2a9b1;box-shadow:0 30px 90px -20px rgba(0,0,0,0.3),0 0 1px #a2a9b1;padding:0;font-size:14px;min-width:300px;border-radius:2px}.mwe-popups.mwe-popups-is-not-tall{width:320px}.mwe-popups .mwe-popups-container{color:#222;margin-top:-9px;padding-top:9px;text-decoration:none}.mwe-popups.mwe-popups-is-not-tall .mwe-popups-extract{min-height:40px;max-height:140px;overflow:hidden;margin-bottom:47px;padding-bottom:0}.mwe-popups .mwe-popups-extract{margin:16px;display:block;color:#222;text-decoration:none;position:relative} .mwe-popups.flipped_y:before{content:'';position:absolute;border:8px solid transparent;border-bottom:0;border-top: 8px solid #a2a9b1;bottom:-8px;left:10px}.mwe-popups.flipped_y:after{content:'';position:absolute;border:11px solid transparent;border-bottom:0;border-top:11px solid #fff;bottom:-7px;left:7px} .mwe-popups.mwe-popups-no-image-tri:before{content:'';position:absolute;border:8px solid transparent;border-top:0;border-bottom: 8px solid #a2a9b1;top:-8px;left:10px}.mwe-popups.mwe-popups-no-image-tri:after{content:'';position:absolute;border:11px solid transparent;border-top:0;border-bottom:11px solid #fff;top:-7px;left:7px} .audio{background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcUlEQVQ4y2P4//8/AyUYQhAH3gNxA7IAIQPmo/H3g/QA8XkgFiBkwHyoYnRQABVfj88AmGZcTuuHyjlgMwBZM7IE3NlQGhQe65EN+I8Dw8MLGgYoFpFqADK/YUAMwOsFigORatFIlYRElaRMWmaiBAMAp0n+3U0kqkAAAAAASUVORK5CYII=);background-position: center;background-repeat: no-repeat;cursor:pointer;margin-left: 8px;opacity: 0.5; width: 16px; display: inline-block;} .audio:hover {opacity: 1;}";
+  //It is the same style context. Separating line for ease of reading and editing
+  style.textContent = ".mwe-popups{background:#fff;position:absolute;z-index:110;-webkit-box-shadow:0 30px 90px -20px rgba(0,0,0,0.3),0 0 1px #a2a9b1;box-shadow:0 30px 90px -20px rgba(0,0,0,0.3),0 0 1px #a2a9b1;padding:0;font-size:14px;min-width:300px;border-radius:2px}";
+  style.textContent = style.textContent + ".mwe-popups .mwe-popups-is-not-tall{width:320px}";
+  style.textContent = style.textContent + ".mwe-popups .mwe-popups-container{color:#222;margin-top:-9px;padding-top:9px;text-decoration:none}";
+  style.textContent = style.textContent + ".mwe-popups .mwe-popups-is-not-tall .mwe-popups-extract{min-height:40px;max-height:140px;overflow:hidden;margin-bottom:47px;padding-bottom:0}";
+  style.textContent = style.textContent + ".mwe-popups .mwe-popups-extract{margin:16px;display:block;color:#222;text-decoration:none;position:relative}"; 
+  style.textContent = style.textContent + ".mwe-popups .flipped_y:before{content:'';position:absolute;border:8px solid transparent;border-bottom:0;border-top: 8px solid #a2a9b1;bottom:-8px;left:10px}";
+  style.textContent = style.textContent + ".mwe-popups .flipped_y:after{content:'';position:absolute;border:11px solid transparent;border-bottom:0;border-top:11px solid #fff;bottom:-7px;left:7px}";
+  style.textContent = style.textContent + ".mwe-popups .mwe-popups-no-image-tri:before{content:'';position:absolute;border:8px solid transparent;border-top:0;border-bottom: 8px solid #a2a9b1;top:-8px;left:10px}";
+  style.textContent = style.textContent + ".mwe-popups .mwe-popups-no-image-tri:after{content:'';position:absolute;border:11px solid transparent;border-top:0;border-bottom:11px solid #fff;top:-7px;left:7px}"; 
+  style.textContent = style.textContent + ".audio{background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcUlEQVQ4y2P4//8/AyUYQhAH3gNxA7IAIQPmo/H3g/QA8XkgFiBkwHyoYnRQABVfj88AmGZcTuuHyjlgMwBZM7IE3NlQGhQe65EN+I8Dw8MLGgYoFpFqADK/YUAMwOsFigORatFIlYRElaRMWmaiBAMAp0n+3U0kqkAAAAAASUVORK5CYII=);background-position: center;background-repeat: no-repeat;cursor:pointer;margin-left: 8px;opacity: 0.5; width: 16px; display: inline-block;}"; 
+  style.textContent = style.textContent + ".audio:hover {opacity: 1;}"; 
   shadow.appendChild(style);
 
   //Create another div inside the shadowRoot. 
@@ -173,10 +186,17 @@ function createDiv(info, selectedText) {
   content.style = "line-height: 1.4; margin-top: 0px; margin-bottom: 11px; max-height: none";
   contentContainer.appendChild(content);
 
-  //The style for the heading and the temoprary text when it is still searching
+  //The H3 element for the heading and the temoprary text when it is still searching. It also creates the sytle.
   var heading = document.createElement("h3");
   heading.style = "margin-block-end: 0px; display:inline-block;";
   heading.textContent = "Searching";
+
+  var pos = document.createElement("h5");
+  pos.style = "margin-top: 3px; margin-bottom: 1px;";
+
+  //This is the H5 element for the phonetics
+  var phonetic = document.createElement("h6");
+  phonetic.style = "margin-top: 3px; margin-bottom: 1px;";
 
   //The style for meaning and temporary text when it is still searching
   var meaning = document.createElement("p");
@@ -197,6 +217,8 @@ function createDiv(info, selectedText) {
 
   //Append all the above into the content tag
   content.appendChild(heading);
+  content.appendChild(pos);
+  content.appendChild(phonetic);
   //content.appendChild(audio);
   content.appendChild(meaning);
   content.appendChild(moreInfo);
@@ -220,7 +242,7 @@ function createDiv(info, selectedText) {
   }
 
   //Return everything above in JSON format
-  return {heading: heading, meaning: meaning, moreInfo: moreInfo};
+  return {heading: heading, phonetic: phonetic, pos: pos, meaning: meaning, moreInfo: moreInfo};
 }
 
 //The event that will trigger the textSelection function which will process the selected vocabularies. 
