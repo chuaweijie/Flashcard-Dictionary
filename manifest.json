@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Flashcard Dictionary",
-	"version": "0.1",
+	"version": "0.2",
 	"default_locale": "en",
 	"description": "This is a Chrome extension that enables highlight to search dictionary functionality while saving the searched word into flash cards.",
 	"icons": {
@@ -27,5 +27,28 @@
 		},
 		"default_title": "Flashcard Dictionary",
 		"default_popup": "popup.html"
-	}
+	},
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+	},
+	"content_scripts": [{
+      "matches": [
+        "<all_urls>"
+      ],
+      "all_frames": true,
+      "js": [
+        "content_script.js"
+      ]
+    }],
+    "incognito": "split",
+    "options_page": "options.html",
+    "options_ui": {
+    	"page": "options.html", 
+    	"open_in_tab": false
+    },
+    "permissions": [
+    	"alarms",
+    	"notifications"
+    ]
 }
