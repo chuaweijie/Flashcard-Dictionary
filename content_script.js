@@ -68,8 +68,10 @@ function appendToDiv(content){
     bubbleDiv.meaning.textContent = "No definition found.";
   }
   else{
+
     //Start of attaching the returned data to bubbleDiv
-    bubbleDiv.heading.textContent = wordDefObj[0].word;
+    var word = wordDefObj[0].word;
+    bubbleDiv.heading.textContent = word;
     bubbleDiv.phonetic.textContent = wordDefObj[0].phonetic;
     
     //The method to get the first meaning object when the name might be different in the JSON. 
@@ -78,9 +80,11 @@ function appendToDiv(content){
 
     //loop to ensure that the exception of defininition doesn't always exist in the first instance. 
     let i = 0;
+    var definition
     while(true){
       if(meaning[0][1][i].definition != undefined){
         bubbleDiv.meaning.textContent = meaning[0][1][i].definition;
+        definition = meaning[0][1][i].definition;
         break;
       }
       else{
@@ -88,13 +92,19 @@ function appendToDiv(content){
       }
     }
 
+    let search_count = 1;
+    let data;
     //add text for user to click link to the source of the definition
-    bubbleDiv.moreInfo.textContent = "More »";  
+    bubbleDiv.moreInfo.textContent = "More »"; 
+    console.log("word :" + word);
+
+    chrome.runtime.sendMessage({vocab:word, definition:definition}, function(response) {
+      //Get response message if any. 
+    });
   }
   
   var heightAfter = popupDiv.clientHeight;
   var difference = heightAfter - heightBefore;
-
 
   if(popupDiv.classList.contains("flipped_y")){
       hostDiv.style.top = parseInt(hostDiv.style.top) - difference + 1 + "px";
