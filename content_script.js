@@ -98,9 +98,7 @@ function appendToDiv(content){
     bubbleDiv.moreInfo.textContent = "More »"; 
     console.log("word :" + word);
 
-    chrome.runtime.sendMessage({vocab:word, definition:definition}, function(response) {
-      //Get response message if any. 
-    });
+    chrome.runtime.sendMessage({vocab:word, definition:definition});
   }
   
   var heightAfter = popupDiv.clientHeight;
