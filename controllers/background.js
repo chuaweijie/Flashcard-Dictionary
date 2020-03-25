@@ -33,7 +33,7 @@ if (localStorage['lastVersionUsed'] != '1') {
 	localStorage['lastVersionUsed'] = '1';
 	initialize_indexedDB();
 	chrome.tabs.create({
-		url: chrome.extension.getURL('options.html')
+		url: chrome.extension.getURL('views/options.html')
 	});
 }
 

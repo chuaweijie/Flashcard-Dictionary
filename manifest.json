@@ -5,31 +5,31 @@
 	"default_locale": "en",
 	"description": "This is a Chrome extension that enables highlight to search dictionary functionality while saving the searched word into flash cards.",
 	"icons": {
-		"16": "images/dictionary-logo-16.png",
-		"32": "images/dictionary-logo-32.png",
-		"48": "images/dictionary-logo-48.png",
-		"64": "images/dictionary-logo-64.png",
-		"72": "images/dictionary-logo-72.png",
-		"96": "images/dictionary-logo-96.png",
-		"120": "images/dictionary-logo-120.png",
-		"240": "images/dictionary-logo-240.png"
+		"16": "views/images/dictionary-logo-16.png",
+		"32": "views/images/dictionary-logo-32.png",
+		"48": "views/images/dictionary-logo-48.png",
+		"64": "views/images/dictionary-logo-64.png",
+		"72": "views/images/dictionary-logo-72.png",
+		"96": "views/images/dictionary-logo-96.png",
+		"120": "views/images/dictionary-logo-120.png",
+		"240": "views/images/dictionary-logo-240.png"
 	},
 	"browser_action": {
 		"default_icon": {
-			"16": "images/dictionary-logo-16.png",
-			"32": "images/dictionary-logo-32.png",
-			"48": "images/dictionary-logo-48.png",
-			"64": "images/dictionary-logo-64.png",
-			"72": "images/dictionary-logo-72.png",
-			"96": "images/dictionary-logo-96.png",
-			"120": "images/dictionary-logo-120.png",
-			"240": "images/dictionary-logo-240.png"		
+			"16": "views/images/dictionary-logo-16.png",
+			"32": "views/images/dictionary-logo-32.png",
+			"48": "views/images/dictionary-logo-48.png",
+			"64": "views/images/dictionary-logo-64.png",
+			"72": "views/images/dictionary-logo-72.png",
+			"96": "views/images/dictionary-logo-96.png",
+			"120": "views/images/dictionary-logo-120.png",
+			"240": "views/images/dictionary-logo-240.png"		
 		},
 		"default_title": "Flashcard Dictionary",
-		"default_popup": "popup.html"
+		"default_popup": "views/popup.html"
 	},
 	"background": {
-		"scripts": ["background.js"],
+		"scripts": ["controllers/background.js"],
 		"persistent": false
 	},
 	"content_scripts": [{
@@ -38,13 +38,13 @@
       ],
       "all_frames": true,
       "js": [
-        "content_script.js"
+        "controllers/content_script.js"
       ]
     }],
     "incognito": "split",
-    "options_page": "options.html",
+    "options_page": "views/options.html",
     "options_ui": {
-    	"page": "options.html", 
+    	"page": "views/options.html", 
     	"open_in_tab": false
     },
     "permissions": [
