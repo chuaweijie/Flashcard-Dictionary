@@ -42,7 +42,6 @@
       ]
     }],
     "incognito": "split",
-    "options_page": "views/options.html",
     "options_ui": {
     	"page": "views/options.html", 
     	"open_in_tab": false
