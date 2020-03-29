@@ -78,6 +78,12 @@ function insert_record(request){
   	};
 }
 
+function send_msg_to_word_list(dataJSON){
+	chrome.tabs.query({url:"chrome-extension://*/views/word-list.html"}, function(tabs){
+		chrome.tabs.sendMessage(tabs[0].id, dataJSON);
+	});
+}
+
 function list_all_records(){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
@@ -87,17 +93,28 @@ function list_all_records(){
     dbRequest.onsuccess = function(event) {
     	var db = event.target.result;
     	var objectStore = db.transaction("flashcard").objectStore("flashcard");
+    	var dataCount = 0;
     	objectStore.openCursor().onsuccess = function(event) {
 			var cursor = event.target.result;
 			var data = []
 			if (cursor) {
-			    data.push({vocab:cursor.value.vocab, definition:cursor.value.definition, count:cursor.value.count, creation_date_time:cursor.value.creation_date_time, last_test_date_time:cursor.value.last_test_date_time, mastery:cursor.value.mastery});
-			    cursor.continue();
+				var dataJSON = {NULL:false, vocab:cursor.value.vocab, 
+								definition:cursor.value.definition, 
+								count:cursor.value.count, 
+								creation_date_time:cursor.value.creation_date_time, 
+								last_test_date_time:cursor.value.last_test_date_time, 
+								mastery:cursor.value.mastery}
+				//Send the data back to word-list.js
+				send_msg_to_word_list(dataJSON);
+				dataCount++;
+				//Continue if there are more data.
+				cursor.continue();	    
 			}
 			else {
-				console.log("No data");
+				if(dataCount == 0){
+					send_msg_to_word_list({NULL:true});
+				}
 			}
-			console.log(data);
 		};
     }
 }
