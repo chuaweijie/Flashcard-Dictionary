@@ -15,7 +15,21 @@
 				Flashcard Dictionary
 			</a>
 		</nav>
-		<div id="vocabCards" class="row row-cols-1 row-cols-md-5 px-3 py-3">
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Vocabulary</th>
+						<th>Definition</th>
+						<th>Level</th>
+						<th class="cell-center">No. of Searches</th>
+						<th class="cell-center">Last Test Date</th>
+						<th class="cell-center">Date Added</th>
+					</tr>
+				</thead>
+				<tbody id="vocabTable">
+				</tbody>
+			</table>
 		</div>
 		<script src="../controllers/word-list.js"></script>
 	</body>

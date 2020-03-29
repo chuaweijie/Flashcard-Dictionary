@@ -49,7 +49,12 @@ function insert_record(request){
     		//If no records were found, save the vocab and definition with default values. 
     		if(data == undefined){
     			debug && console.log("No records found");
-    			var addRequest = fcObjectStore.add({vocab:request.vocab, definition:request.definition, count:1, creation_date_time:currentDateTime.getTime(), last_test_date_time:0, mastery:0});
+    			var addRequest = fcObjectStore.add({vocab:request.vocab, 
+    												definition:request.definition, 
+    												count:1, 
+    												creation_date_time:currentDateTime.getTime(), 
+    												last_test_date_time:0, 
+    												mastery:0});
     			addRequest.onerror = function(event){
 		    		debug && console.log("IndexedDB Insertion error: " + request.vocab);
 		    	}
@@ -98,11 +103,8 @@ function list_all_records(){
 			var cursor = event.target.result;
 			var data = []
 			if (cursor) {
-				var dataJSON = {NULL:false, vocab:cursor.value.vocab, 
-								definition:cursor.value.definition, 
+				var dataJSON = {NULL:false, vocab:cursor.value.vocab,  
 								count:cursor.value.count, 
-								creation_date_time:cursor.value.creation_date_time, 
-								last_test_date_time:cursor.value.last_test_date_time, 
 								mastery:cursor.value.mastery}
 				//Send the data back to word-list.js
 				send_msg_to_word_list(dataJSON);
