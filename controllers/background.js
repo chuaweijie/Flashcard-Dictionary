@@ -103,7 +103,7 @@ function list_all_records(){
 			var cursor = event.target.result;
 			var data = []
 			if (cursor) {
-				var dataJSON = {NULL:false, vocab:cursor.value.vocab,  
+				let dataJSON = {NULL:false, type:"all", vocab:cursor.value.vocab,  
 								count:cursor.value.count, 
 								mastery:cursor.value.mastery}
 				//Send the data back to word-list.js
@@ -121,6 +121,27 @@ function list_all_records(){
 			}
 		};
     }
+}
+
+function get_vocab_details(vocab){
+	var dbRequest = initialize_indexedDB();
+	dbRequest.onerror = function(event) {
+		debug && console.log("IndexedDB Error");
+		return false;
+	};
+	//I need to write something here. 
+    dbRequest.onsuccess = function(event) {
+    	var db = event.target.result;
+    	var index = db.transaction("flashcard").objectStore("flashcard").index("vocab");
+    	index.get(vocab).onsuccess = function(event){
+    		let result = event.target.result;
+    		let dataJSON = {NULL:false, type:"vocabDetails", vocab:result.vocab,
+    						definition:result.definition, count:result.count, 
+    						creationTime:result.creation_date_time, lastTestTime:result.last_test_date_time,
+    						mastery:result.mastery};
+    		send_msg_to_word_list(dataJSON);
+    	};
+    }	
 }
 
 //Code to launch options page or onboarding page if this is the user's first time. 
@@ -147,6 +168,9 @@ chrome.runtime.onMessage.addListener(
 		else{
 			if(request.action == "listData"){
 				let status = list_all_records();
+			}
+			else if(request.action == "getDetail"){
+				get_vocab_details(request.vocab);
 			}
 		}
 	}

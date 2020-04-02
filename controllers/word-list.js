@@ -25,7 +25,8 @@ chrome.runtime.onMessage.addListener(
 		if(request.NULL){
 			console.log("No Data");
 		}
-		else{
+		else if (request.type == "all"){
+			console.log(request.length);
 			//Create the HTML elements needed.
 			var divCol = document.createElement("div");
 			var divCard = document.createElement("div");
@@ -40,8 +41,8 @@ chrome.runtime.onMessage.addListener(
 			var masteryObj = getLevelObj(request.mastery);
 
 			divCol.addEventListener("click", function(e){
-				var vocab = e.currentTarget.id;
-				console.log(vocab);
+				let vocab = e.currentTarget.id;
+				chrome.runtime.sendMessage({action:"getDetail", vocab:vocab});
 			}, false);
 
 			
@@ -69,5 +70,8 @@ chrome.runtime.onMessage.addListener(
 			//Apend the lement on the page!
 			var vocabGrid = document.getElementById("vocabCards")
 			vocabGrid.appendChild(divCol);
+		}
+		else if(request.type = "vocabDetails"){
+			console.log(request);
 		}
 	});
