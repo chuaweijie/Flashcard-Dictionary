@@ -45,8 +45,6 @@ chrome.runtime.onMessage.addListener(
 				chrome.runtime.sendMessage({action:"getDetail", vocab:vocab});
 			}, false);
 
-			
-
 			//Set style for all elements
 			divCol.className = "col mb-4";
 			divCard.className = "card";
@@ -73,5 +71,14 @@ chrome.runtime.onMessage.addListener(
 		}
 		else if(request.type = "vocabDetails"){
 			console.log(request);
+			let modalVocab = document.getElementById("modalVocab");
+			let modalBody = document.getElementById("modalBody");
+			let h6Definiton = document.createElement("h6");
+
+			h6Definiton.appendChild(document.createTextNode("Definition: "));
+
+			modalVocab.replaceChild(document.createTextNode(request.vocab),modalVocab.childNodes[0]);
+			modalBody.replaceChild(document.createTextNode(request.definition), modalBody.childNodes[8]);
+			$('#vocabDetailModal').modal('show');
 		}
 	});
