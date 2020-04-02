@@ -17,7 +17,7 @@ function getLevelObj(mastery){
 }
 
 //Sending trigger to background.js to get data. 
-chrome.runtime.sendMessage({msg:"Signal to resut word list"});
+chrome.runtime.sendMessage({action:"listData"});
 
 //Process the data that has been sent back from background.js
 chrome.runtime.onMessage.addListener(
@@ -34,8 +34,17 @@ chrome.runtime.onMessage.addListener(
 			var h5Vocab = document.createElement("h5");
 			var spanSearchCount = document.createElement("span");
 
+			divCol.id = request.vocab;
+
 			//Create the object that have both badge style and mastery name
 			var masteryObj = getLevelObj(request.mastery);
+
+			divCol.addEventListener("click", function(e){
+				var vocab = e.currentTarget.id;
+				console.log(vocab);
+			}, false);
+
+			
 
 			//Set style for all elements
 			divCol.className = "col mb-4";

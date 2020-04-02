@@ -115,7 +115,9 @@ function list_all_records(){
 			else {
 				if(dataCount == 0){
 					send_msg_to_word_list({NULL:true});
+					return false;
 				}
+				return true;
 			}
 		};
     }
@@ -143,7 +145,9 @@ chrome.runtime.onMessage.addListener(
 			insert_record(request);
 		}
 		else{
-			 let data = list_all_records();
+			if(request.action == "listData"){
+				let status = list_all_records();
+			}
 		}
 	}
 );
