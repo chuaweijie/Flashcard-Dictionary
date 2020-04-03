@@ -28,17 +28,17 @@ chrome.runtime.onMessage.addListener(
 		else if (request.type == "all"){
 			console.log(request.length);
 			//Create the HTML elements needed.
-			var divCol = document.createElement("div");
-			var divCard = document.createElement("div");
-			var divCardBody = document.createElement("div");
-			var badgeMastery = document.createElement("div");
-			var h5Vocab = document.createElement("h5");
-			var spanSearchCount = document.createElement("span");
+			let divCol = document.createElement("div");
+			let divCard = document.createElement("div");
+			let divCardBody = document.createElement("div");
+			let badgeMastery = document.createElement("div");
+			let h5Vocab = document.createElement("h5");
+			let spanSearchCount = document.createElement("span");
 
 			divCol.id = request.vocab;
 
 			//Create the object that have both badge style and mastery name
-			var masteryObj = getLevelObj(request.mastery);
+			let masteryObj = getLevelObj(request.mastery);
 
 			divCol.addEventListener("click", function(e){
 				let vocab = e.currentTarget.id;
@@ -73,12 +73,39 @@ chrome.runtime.onMessage.addListener(
 			console.log(request);
 			let modalVocab = document.getElementById("modalVocab");
 			let modalBody = document.getElementById("modalBody");
+			let badgeMastery = document.getElementById("badgeMastery");
+			let badgeCount = document.getElementById("badgeCount");
+			let badgeTest = document.getElementById("badgeTest");
+			let badgeAdd = document.getElementById("badgeAdd");
 			let h6Definiton = document.createElement("h6");
+
+			badgeCount.innerHTML = '';
+			badgeTest.innerHTML = '';
+			badgeAdd.innerHTML = '';
+
+			let masteryObj = getLevelObj(request.mastery);
+
+			badgeMastery.className = masteryObj.style;
 
 			h6Definiton.appendChild(document.createTextNode("Definition: "));
 
+			let creationDate = new Date(request.creationTime).toDateString();
+			if (request.lastTestTime == 0)
+			{
+				var lastDateTime = "-"
+			}
+			else
+			{
+				var lastDateTime = new Date(request.lastTestTime).toDateString();
+			}
+		
 			modalVocab.replaceChild(document.createTextNode(request.vocab),modalVocab.childNodes[0]);
+			badgeMastery.replaceChild(document.createTextNode(masteryObj.status), badgeMastery.childNodes[0]);
 			modalBody.replaceChild(document.createTextNode(request.definition), modalBody.childNodes[8]);
+			badgeCount.appendChild(document.createTextNode(request.count));
+			badgeTest.appendChild(document.createTextNode(lastDateTime));
+			badgeAdd.appendChild(document.createTextNode(creationDate));
+
 			$('#vocabDetailModal').modal('show');
 		}
 	});
