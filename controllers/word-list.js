@@ -12,9 +12,45 @@ function getLevelObj(mastery){
 		return {style:"badge badge-info", status:"Level 3"};
 	}
 	else if (mastery == 4){
-		return {style:"badge badge-success", status:"Msatered"};
+		return {style:"badge badge-success", status:"Mastered"};
 	}
 }
+
+document.getElementById("modalBtnMastered").addEventListener("click", function(e){
+	let vocab = document.getElementById("modalVocab").innerHTML;
+	let btnMastered = document.getElementById("modalBtnMastered");
+	let cardVocab = document.getElementById(vocab);
+	let cardBadge = cardVocab.getElementsByClassName("badge");
+	
+	if(btnMastered.innerHTML == "Mastered"){
+		chrome.runtime.sendMessage({action:"setMastered", vocab:vocab});
+		cardBadge[0].className = "badge badge-success";
+		cardBadge[0].firstChild.data = "Mastered";
+		//Change the status of word in word-list.html	
+	}
+	else{
+		chrome.runtime.sendMessage({action:"setNew", vocab:vocab});		
+		cardBadge[0].className = "badge badge-danger";
+		cardBadge[0].firstChild.data = "New";
+		//Change the status of word in word-list.html
+	}
+	
+}, false);
+
+document.getElementById("modalBtnDelete").addEventListener("click", function(e){
+	let vocab = document.getElementById("modalVocab").innerHTML;
+	let h5Title = document.getElementById("confirmationTitle");
+	h5Title.replaceChild(document.createTextNode('Are you sure you want to delete "' + vocab + '"?'), h5Title.childNodes[0]);
+}, false);
+
+
+document.getElementById("btnConfirmDel").addEventListener("click", function(e){
+	let vocab = document.getElementById("modalVocab").innerHTML;
+	let cardVocab = document.getElementById(vocab);
+	cardVocab.remove();
+	chrome.runtime.sendMessage({action:"delVocab", vocab:vocab});
+	$('#vocabDetailModal').modal('hide')
+}, false);
 
 //Sending trigger to background.js to get data. 
 chrome.runtime.sendMessage({action:"listData"});
@@ -26,7 +62,6 @@ chrome.runtime.onMessage.addListener(
 			console.log("No Data");
 		}
 		else if (request.type == "all"){
-			console.log(request.length);
 			//Create the HTML elements needed.
 			let divCol = document.createElement("div");
 			let divCard = document.createElement("div");
@@ -70,7 +105,6 @@ chrome.runtime.onMessage.addListener(
 			vocabGrid.appendChild(divCol);
 		}
 		else if(request.type = "vocabDetails"){
-			console.log(request);
 			let modalVocab = document.getElementById("modalVocab");
 			let modalBody = document.getElementById("modalBody");
 			let badgeMastery = document.getElementById("badgeMastery");
@@ -78,6 +112,7 @@ chrome.runtime.onMessage.addListener(
 			let badgeTest = document.getElementById("badgeTest");
 			let badgeAdd = document.getElementById("badgeAdd");
 			let h6Definiton = document.createElement("h6");
+			let btnMastered = document.getElementById("modalBtnMastered");
 
 			badgeCount.innerHTML = '';
 			badgeTest.innerHTML = '';
@@ -89,13 +124,18 @@ chrome.runtime.onMessage.addListener(
 
 			h6Definiton.appendChild(document.createTextNode("Definition: "));
 
+			if(request.mastery == 4){
+				btnMastered.innerHTML = "Reset Mastery";
+			}
+			else{
+				btnMastered.innerHTML = "Mastered";
+			}
+
 			let creationDate = new Date(request.creationTime).toDateString();
-			if (request.lastTestTime == 0)
-			{
+			if (request.lastTestTime == 0){
 				var lastDateTime = "-"
 			}
-			else
-			{
+			else{
 				var lastDateTime = new Date(request.lastTestTime).toDateString();
 			}
 		

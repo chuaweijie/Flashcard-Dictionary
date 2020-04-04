@@ -83,6 +83,27 @@ function insert_record(request){
   	};
 }
 
+function delete_record(vocab){
+	var dbRequest = initialize_indexedDB();
+	dbRequest.onerror = function(event) {
+		debug && console.log("IndexedDB Error");
+	};
+    dbRequest.onsuccess = function(event) {
+    	var db = event.target.result;
+    	var request = db.transaction("flashcard", "readwrite").objectStore("flashcard").delete(vocab);
+
+    	request.onerror = function(event){
+    		debug && console.log("Get Vocab error");
+    		db.close();
+    	}
+
+    	request.onsuccess = function(event){
+    		debug && console.log("Delete successful")		
+  			db.close();
+    	}
+  	};
+}
+
 function send_msg_to_word_list(dataJSON){
 	chrome.tabs.query({url:"chrome-extension://*/views/word-list.html"}, function(tabs){
 		chrome.tabs.sendMessage(tabs[0].id, dataJSON);
@@ -144,6 +165,51 @@ function get_vocab_details(vocab){
     }	
 }
 
+function update_mastery(vocab, mastered){
+	var dbRequest = initialize_indexedDB();
+	dbRequest.onerror = function(event) {
+		debug && console.log("IndexedDB Error");
+	};
+    dbRequest.onsuccess = function(event) {
+    	var db = event.target.result;
+    	var fcObjectStore = db.transaction("flashcard", "readwrite").objectStore("flashcard");
+    	//Try to check if this vocabulary already existed
+    	var getRequest = fcObjectStore.get(vocab);
+
+    	getRequest.onerror = function(event){
+    		debug && console.log("Get Vocab error");
+    		db.close();
+    	}
+
+    	getRequest.onsuccess = function(event){
+    		let data = getRequest.result
+    		let currentDateTime = new Date()
+    		//If no records were found, save the vocab and definition with default values. 
+    		if(data == undefined){
+    			debug && console.log("Word retreival error");
+    		}
+    		//If there is a previosu record, update the values and save it in. 
+    		else{	
+    			if (mastered){
+    				data.mastery = 4;
+    			}
+    			else{
+    				data.mastery = 0;
+    			}
+    			var addRequest = fcObjectStore.put(data);
+    			addRequest.onerror = function(event){
+		    		debug && console.log("IndexedDB Insertion error: " + request.vocab);
+		    	}
+
+		    	addRequest.onsuccess = function(event) {
+		    		debug && console.log("Save complete: " + request.vocab);
+		    	}
+    		}
+    		db.close();
+    	}
+  	};
+}
+
 //Code to launch options page or onboarding page if this is the user's first time. 
 //We can also use this code to display change log after update. 	
 if (localStorage['lastVersionUsed'] != '1') {
@@ -167,10 +233,19 @@ chrome.runtime.onMessage.addListener(
 		}
 		else{
 			if(request.action == "listData"){
-				let status = list_all_records();
+				list_all_records();
 			}
 			else if(request.action == "getDetail"){
 				get_vocab_details(request.vocab);
+			}
+			else if(request.action == "setMastered"){
+				update_mastery(request.vocab, true);
+			}
+			else if(request.action == "setNew"){
+				update_mastery(request.vocab, false);
+			}
+			else if(request.action == "delVocab"){
+				delete_record(request.vocab);
 			}
 		}
 	}
