@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale = 1">
+		<meta name="author" content="Chua Wei Jie">
+		<title>Flashcard Dictionary: Word List</title>
+		<link rel="shortcut icon" href="images/dictionary-logo-240.png">
+		<link rel="stylesheet" href="bootstrap-4.4.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/word-list.css">
+	</head>
+	<body>
+		<nav class="navbar navbar-dark bg-primary">
+			<a class="navbar-brand" href="#">
+				<img src="images/dictionary-logo-white.svg" width="32" height="32" class="d-inline-block align-top mr-2" alt="Flashcard Dictionary Logo">
+				Flashcard Dictionary
+			</a>
+		</nav>
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Vocabulary</th>
+						<th>Definition</th>
+						<th>Level</th>
+						<th class="cell-center">No. of Searches</th>
+						<th class="cell-center">Last Test Date</th>
+						<th class="cell-center">Date Added</th>
+					</tr>
+				</thead>
+				<tbody id="vocabTable">
+				</tbody>
+			</table>
+		</div>
+		<script src="../controllers/word-list.js"></script>
+	</body>
+</html>

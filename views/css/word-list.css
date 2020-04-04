@@ -1,0 +1,15 @@
+.class-title {
+	text-align: center;
+}
+
+.card:hover {
+	transform: scale(1.05);
+}
+
+.modal-backdrop {
+  display: none;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+}
