@@ -16,6 +16,20 @@ function getLevelObj(mastery){
 	}
 }
 
+function filterSearch(){
+	let filter = document.getElementById("vocabSearch").value.toLowerCase();
+	let cards = document.getElementsByClassName("col mb-4");
+	for (i = 0; i < cards.length; i++){
+	 	let h5 = cards[i].getElementsByTagName("h5")[0];
+	 	txtValue = h5.textContent || h5.innerText;
+	 	if(txtValue.toLowerCase().indexOf(filter) > -1){
+	 		document.getElementById(txtValue).style.display = "";
+	 	} else{
+	 		document.getElementById(txtValue).style.display = "none";
+	 	}
+	}
+}
+
 document.getElementById("modalBtnMastered").addEventListener("click", function(e){
 	let vocab = document.getElementById("modalVocab").innerHTML;
 	let btnMastered = document.getElementById("modalBtnMastered");
@@ -51,6 +65,15 @@ document.getElementById("btnConfirmDel").addEventListener("click", function(e){
 	chrome.runtime.sendMessage({action:"delVocab", vocab:vocab});
 	$('#vocabDetailModal').modal('hide')
 }, false);
+
+//Logic to cater for search bar filter
+document.getElementById("vocabSearch").addEventListener("keyup", function(e){
+	filterSearch();
+});
+
+document.getElementById("vocabSearch").addEventListener("search", function(e){
+	filterSearch();
+});
 
 //Sending trigger to background.js to get data. 
 chrome.runtime.sendMessage({action:"listData"});
