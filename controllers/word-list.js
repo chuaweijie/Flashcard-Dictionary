@@ -1,18 +1,18 @@
 function getLevelObj(mastery){
 	if (mastery == 0){
-		return {style:"badge badge-danger", status:"New"};
+		return {style:"badge badge-danger mastery", status:"New"};
 	}
 	else if (mastery == 1){
-		return {style:"badge badge-warning", status:"Level 1"};
+		return {style:"badge badge-warning mastery", status:"Level 1"};
 	}
 	else if (mastery == 2){
-		return {style:"badge badge-secondary", status:"Level 2"};
+		return {style:"badge badge-secondary mastery", status:"Level 2"};
 	}
 	else if (mastery == 3){
-		return {style:"badge badge-info", status:"Level 3"};
+		return {style:"badge badge-info mastery", status:"Level 3"};
 	}
 	else if (mastery == 4){
-		return {style:"badge badge-success", status:"Mastered"};
+		return {style:"badge badge-success mastery", status:"Mastered"};
 	}
 }
 
@@ -24,7 +24,8 @@ function filterSearch(){
 	 	txtValue = h5.textContent || h5.innerText;
 	 	if(txtValue.toLowerCase().indexOf(filter) > -1){
 	 		document.getElementById(txtValue).style.display = "";
-	 	} else{
+	 	} 
+	 	else{
 	 		document.getElementById(txtValue).style.display = "none";
 	 	}
 	}
@@ -67,12 +68,43 @@ document.getElementById("btnConfirmDel").addEventListener("click", function(e){
 }, false);
 
 //Logic to cater for search bar filter
-document.getElementById("vocabSearch").addEventListener("keyup", function(e){
-	filterSearch();
-});
+document.getElementById("vocabSearch").addEventListener("keyup", filterSearch);
+document.getElementById("vocabSearch").addEventListener("search", filterSearch);
 
-document.getElementById("vocabSearch").addEventListener("search", function(e){
-	filterSearch();
+//The code for status filter. 
+document.getElementById("statusFilter").addEventListener("change", function(e){
+	let toggleMasteryLevels = this.getElementsByTagName("input");
+	let cards = document.getElementsByClassName("col mb-4");
+	for (i = 0; i < cards.length; i++ ){
+		let h5 = cards[i].getElementsByTagName("h5")[0];
+	 	txtValue = h5.textContent || h5.innerText;
+	 	let badgeText = cards[i].getElementsByClassName("badge mastery")[0]
+	 	let badgeType = badgeText.className.split(" ")[1];
+	 	console.log(badgeType);
+		if(!toggleMasteryLevels[0].checked && !toggleMasteryLevels[1].checked && !toggleMasteryLevels[2].checked && !toggleMasteryLevels[3].checked && !toggleMasteryLevels[4].checked){
+			document.getElementById(txtValue).style.display = "";
+		}
+		else{
+			if(toggleMasteryLevels[0].checked && badgeType == 'badge-danger'){
+				document.getElementById(txtValue).style.display = "";	
+			}
+			else if(toggleMasteryLevels[1].checked && badgeType == 'badge-warning'){
+				document.getElementById(txtValue).style.display = "";
+			}
+			else if(toggleMasteryLevels[2].checked && badgeType == 'badge-secondary'){
+				document.getElementById(txtValue).style.display = "";
+			}
+			else if(toggleMasteryLevels[3].checked && badgeType == 'badge-info'){
+				document.getElementById(txtValue).style.display = "";
+			}
+			else if(toggleMasteryLevels[4].checked && badgeType == 'badge-success'){
+				document.getElementById(txtValue).style.display = "";
+			}
+			else{
+				document.getElementById(txtValue).style.display = "none";		
+			}
+		}
+	}	
 });
 
 //Sending trigger to background.js to get data. 
