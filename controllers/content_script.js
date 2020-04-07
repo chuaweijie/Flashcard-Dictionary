@@ -1,4 +1,5 @@
-
+//Variable used to turn on debug mode
+var debug = false;
 var bubbleDiv = null;
 
 //This funciton will be called when users select the text. It will handle false alarms when users just simply click and selects nothing. 
@@ -25,8 +26,12 @@ function textSelection() {
   //Only trigger text look up if there are words selected
   if(selectedText != "" && selectedText != '' && bubbleDiv == null){
     var info = getSelectionInfo();
-    bubbleDiv = createDiv(info, selectedText);
-    wordLookup(selectedText);
+    chrome.storage.sync.get('extensionEnabled', function(result) {
+      if (result.extensionEnabled){ 
+        bubbleDiv = createDiv(info, selectedText);
+        wordLookup(selectedText);
+      }
+    });
   }
   else{
     //Code to dimiss the pop up bubble
@@ -96,7 +101,7 @@ function appendToDiv(content){
     let data;
     //add text for user to click link to the source of the definition
     bubbleDiv.moreInfo.textContent = "More »"; 
-    console.log("word :" + word);
+    debug && console.log("word :" + word);
 
     chrome.runtime.sendMessage({vocab:word, definition:definition});
   }
@@ -256,5 +261,5 @@ function createDiv(info, selectedText) {
 
 //The event that will trigger the textSelection function which will process the selected vocabularies. 
 document.onclick = function() {
-  textSelection();
+  textSelection();    
 };

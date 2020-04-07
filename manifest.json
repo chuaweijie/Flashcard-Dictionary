@@ -49,6 +49,7 @@
     "permissions": [
     	"alarms",
     	"notifications",
-    	"tabs"
+    	"tabs",
+    	"storage"
     ]
 }
