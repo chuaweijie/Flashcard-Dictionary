@@ -215,6 +215,8 @@ function update_mastery(vocab, mastered){
 if (localStorage['lastVersionUsed'] != '1') {
 	localStorage['lastVersionUsed'] = '1';
 	initialize_indexedDB();
+	//Set the extention to be enabled
+	chrome.storage.sync.set({extensionEnabled: true});
 	chrome.tabs.create({
 		url: chrome.extension.getURL('views/welcome.html')
 	});
