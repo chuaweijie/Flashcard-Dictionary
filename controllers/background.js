@@ -224,6 +224,7 @@ function get_quiz(){
     	let cursor = db.transaction("flashcard").objectStore("flashcard").index("last_test_date_time").openCursor(keyRange)
     	let dataCount = 0;
     	let sentData = 0;
+    	let finalJSON = {NULL:false, entries:[]};
     	cursor.onsuccess = function(event){
     		let result = event.target.result;
     		if (result) {
@@ -232,37 +233,43 @@ function get_quiz(){
     			let vocab = result.value.vocab;
     			let definition = result.value.definition;
     			
-    			dataJSON = {NULL:false, vocab:vocab, definition:definition};
-    			console.log(dataCount);
+    			dataJSON = { vocab:vocab, definition:definition};
+			
     			if (mastery == 1 && (lastTestTime < (today - (day * 3)))){
-    				send_msg(dataJSON, "quiz");
+    				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}
     			else if (mastery == 2 && (lastTestTime < (today - week))){
-    				send_msg(dataJSON, "quiz");
+    				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}
     			else if (mastery == 3 && (lastTestTime < (today - (week * 2)))){
-    				send_msg(dataJSON, "quiz");
+    				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}
     			else if (mastery == 3 && (lastTestTime < (today - month))){
-    				send_msg(dataJSON, "quiz");
+    				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}
     			else{
-    				send_msg(dataJSON, "quiz");
+    				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}
+    			
     			dataCount++;
-    			if(sentData < 15){
-    				result.continue();	    
+    			if(sentData < 15) {
+    				result.continue();
     			}
+    			else {
+    				send_msg(finalJSON, "quiz");
+    			}
+    			
 			}
 			else {
 				if(dataCount == 0){
 					send_msg({NULL:true}, "quiz");
 				}
+				send_msg(finalJSON, "quiz");
 			}
     	};
     }	
