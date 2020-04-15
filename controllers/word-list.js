@@ -189,7 +189,7 @@ chrome.runtime.onMessage.addListener(
 				}
 
 				let creationDate = new Date(request.creationTime).toDateString();
-				if (request.lastTestTime == 0){
+				if (request.lastTestTime == request.creationTime){
 					var lastDateTime = "-"
 				}
 				else{

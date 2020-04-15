@@ -162,7 +162,7 @@ function get_vocab_details(vocab){
     }	
 }
 
-function update_mastery(vocab, mastered){
+function update_mastery(vocab, mastery, updateTestTime = false){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
 		debug && console.log("IndexedDB Error");
@@ -187,11 +187,9 @@ function update_mastery(vocab, mastered){
     		}
     		//If there is a previosu record, update the values and save it in. 
     		else{	
-    			if (mastered){
-    				data.mastery = 4;
-    			}
-    			else{
-    				data.mastery = 0;
+    			data.mastery = mastery;
+    			if (updateTestTime) {
+    				data.last_test_date_time = currentDateTime.getTime();
     			}
     			var addRequest = fcObjectStore.put(data);
     			addRequest.onerror = function(event){
@@ -233,7 +231,7 @@ function get_quiz(){
     			let vocab = result.value.vocab;
     			let definition = result.value.definition;
     			
-    			dataJSON = { vocab:vocab, definition:definition};
+    			dataJSON = { vocab:vocab, definition:definition, mastery:mastery};
 			
     			if (mastery == 1 && (lastTestTime < (today - (day * 3)))){
     				finalJSON.entries.push(dataJSON);
@@ -290,26 +288,29 @@ chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		//Open conneciton to FlashcardDictionary
 		console.log("Sender URL: "+sender.url);
-		if (request.action == "setVocab"){
+		if (request.action == "setVocab") {
 			insert_record(request);		
 		}
-		else if(request.action == "listData"){
+		else if(request.action == "listData") {
 			list_all_records();
 		}
-		else if(request.action == "getDetail"){
+		else if(request.action == "getDetail") {
 			get_vocab_details(request.vocab);
 		}
-		else if(request.action == "setMastered"){
-			update_mastery(request.vocab, true);
+		else if(request.action == "setMastered") {
+			update_mastery(request.vocab, 4);
 		}
-		else if(request.action == "setNew"){
-			update_mastery(request.vocab, false);
+		else if(request.action == "setNew") {
+			update_mastery(request.vocab, 0);
 		}
-		else if(request.action == "delVocab"){
+		else if(request.action == "delVocab") {
 			delete_record(request.vocab);
 		}
-		else if(request.action == "getQuiz"){
+		else if(request.action == "getQuiz") {
 			get_quiz();
+		}
+		else if(request.action == "updateMastery") {
+			update_mastery(request.vocab, request.mastery, true);
 		}
 	}
 );

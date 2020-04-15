@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		if(sender.url == null){
 			if(request.NULL){
-				console.log("No Data");
+				$('#modalNoVocab').modal('show');
 			}
 			else {
 				answerKeys = [];
@@ -35,6 +35,24 @@ function generateTest(item, index){
 }
 
 function submitHandler(e){
+	let len = answerKeys.length;
+	for (let i = 0; i < len; i++ ) {
+		var ans = $('#a' + i).val().toLowerCase();
+		let newMastery;
+		if(answerKeys[i].vocab.toLowerCase().localeCompare(ans) == 0) {
+			newMastery = answerKeys[i].mastery + 1;
+			if (newMastery > 4) {
+				newMastery = 0;
+			}
+		}
+		else {
+			newMastery = answerKeys[i].mastery - 1;
+			if (newMastery < 0) {
+				newMastery = 0;
+			}
+		}
+		chrome.runtime.sendMessage({action:"updateMastery", vocab:answerKeys[i].vocab, mastery:newMastery});
+	}
 	//check all the answers. 
 	//remove carouselQuiz
 	//Generate the result list with button to close this tab or go to word list
