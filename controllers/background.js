@@ -53,7 +53,7 @@ function insert_record(request){
     												definition:request.definition, 
     												count:1, 
     												creation_date_time:currentDateTime.getTime(), 
-    												last_test_date_time:0, 
+    												last_test_date_time:currentDateTime.getTime(), 
     												mastery:0});
     			addRequest.onerror = function(event){
 		    		debug && console.log("IndexedDB Insertion error: " + request.vocab);
@@ -104,8 +104,8 @@ function delete_record(vocab){
   	};
 }
 
-function send_msg_to_word_list(dataJSON){
-	chrome.tabs.query({url:"chrome-extension://*/views/word-list.html"}, function(tabs){
+function send_msg(dataJSON, pageName){
+	chrome.tabs.query({url:"chrome-extension://*/views/"+pageName+".html"}, function(tabs){
 		chrome.tabs.sendMessage(tabs[0].id, dataJSON);
 	});
 }
@@ -122,23 +122,20 @@ function list_all_records(){
     	var dataCount = 0;
     	objectStore.openCursor().onsuccess = function(event) {
 			var cursor = event.target.result;
-			var data = []
 			if (cursor) {
 				let dataJSON = {NULL:false, type:"all", vocab:cursor.value.vocab,  
 								count:cursor.value.count, 
 								mastery:cursor.value.mastery}
 				//Send the data back to word-list.js
-				send_msg_to_word_list(dataJSON);
+				send_msg(dataJSON,"word-list");
 				dataCount++;
 				//Continue if there are more data.
 				cursor.continue();	    
 			}
 			else {
 				if(dataCount == 0){
-					send_msg_to_word_list({NULL:true});
-					return false;
+					send_msg({NULL:true}, "word-list");
 				}
-				return true;
 			}
 		};
     }
@@ -150,7 +147,7 @@ function get_vocab_details(vocab){
 		debug && console.log("IndexedDB Error");
 		return false;
 	};
-	//I need to write something here. 
+	//Get the vocabulary detail
     dbRequest.onsuccess = function(event) {
     	var db = event.target.result;
     	var index = db.transaction("flashcard").objectStore("flashcard").index("vocab");
@@ -160,12 +157,12 @@ function get_vocab_details(vocab){
     						definition:result.definition, count:result.count, 
     						creationTime:result.creation_date_time, lastTestTime:result.last_test_date_time,
     						mastery:result.mastery};
-    		send_msg_to_word_list(dataJSON);
+    		send_msg(dataJSON, "word-list");
     	};
     }	
 }
 
-function update_mastery(vocab, mastered){
+function update_mastery(vocab, mastery, updateTestTime = false){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
 		debug && console.log("IndexedDB Error");
@@ -190,11 +187,9 @@ function update_mastery(vocab, mastered){
     		}
     		//If there is a previosu record, update the values and save it in. 
     		else{	
-    			if (mastered){
-    				data.mastery = 4;
-    			}
-    			else{
-    				data.mastery = 0;
+    			data.mastery = mastery;
+    			if (updateTestTime) {
+    				data.last_test_date_time = currentDateTime.getTime();
     			}
     			var addRequest = fcObjectStore.put(data);
     			addRequest.onerror = function(event){
@@ -209,17 +204,83 @@ function update_mastery(vocab, mastered){
     	}
   	};
 }
+ 
+function get_quiz(){
+	let dbRequest = initialize_indexedDB();
+	dbRequest.onerror = function(event) {
+		debug && console.log("IndexedDB Error");
+		return false;
+	};
+    dbRequest.onsuccess = function(event) {
+    	let db = event.target.result;
+    	let day = new Date(86400000);
+    	let week = day * 7;
+    	let month = day * 30;
+    	let today = new Date();
+    	let range = (today - day);
+    	let keyRange = 	IDBKeyRange.upperBound(range);
+    	let cursor = db.transaction("flashcard").objectStore("flashcard").index("last_test_date_time").openCursor(keyRange)
+    	let dataCount = 0;
+    	let sentData = 0;
+    	let finalJSON = {NULL:false, entries:[]};
+    	cursor.onsuccess = function(event){
+    		let result = event.target.result;
+    		if (result) {
+    			let mastery = result.value.mastery;
+    			let lastTestTime = result.value.last_test_date_time;
+    			let vocab = result.value.vocab;
+    			let definition = result.value.definition;
+    			
+    			dataJSON = { vocab:vocab, definition:definition, mastery:mastery};
+			
+    			if (mastery == 1 && (lastTestTime < (today - (day * 3)))){
+    				finalJSON.entries.push(dataJSON);
+    				sentData++;
+    			}
+    			else if (mastery == 2 && (lastTestTime < (today - week))){
+    				finalJSON.entries.push(dataJSON);
+    				sentData++;
+    			}
+    			else if (mastery == 3 && (lastTestTime < (today - (week * 2)))){
+    				finalJSON.entries.push(dataJSON);
+    				sentData++;
+    			}
+    			else if (mastery == 3 && (lastTestTime < (today - month))){
+    				finalJSON.entries.push(dataJSON);
+    				sentData++;
+    			}
+    			else{
+    				finalJSON.entries.push(dataJSON);
+    				sentData++;
+    			}
+    			
+    			dataCount++;
+    			if(sentData < 15) {
+    				result.continue();
+    			}
+    			else {
+    				send_msg(finalJSON, "quiz");
+    			}
+    			
+			}
+			else {
+				if(dataCount == 0){
+					send_msg({NULL:true}, "quiz");
+				}
+				send_msg(finalJSON, "quiz");
+			}
+    	};
+    }	
+}
 
 //Code to launch options page or onboarding page if this is the user's first time. 
 //We can also use this code to display change log after update. 	
 if (localStorage['lastVersionUsed'] != '1') {
 	localStorage['lastVersionUsed'] = '1';
 	initialize_indexedDB();
-	//Set the extention to be enabled
-	chrome.storage.sync.set({extensionEnabled: true});
-	chrome.tabs.create({
+	/*chrome.tabs.create({
 		url: chrome.extension.getURL('views/welcome.html')
-	});
+	});*/
 }
 
 //Listener to listen for messages sent from content_script.js
@@ -227,28 +288,29 @@ chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		//Open conneciton to FlashcardDictionary
 		console.log("Sender URL: "+sender.url);
-		//chrome-extension://ekkioomfpehmkanapfbnjhepcehhjphb/views/word-list.html
-		var pattern = /chrome-extension:\/\/.+\/views\/word-list\.html/i;
-		var result = sender.url.match(pattern);
-		if (result == null){
-			insert_record(request);
+		if (request.action == "setVocab") {
+			insert_record(request);		
 		}
-		else{
-			if(request.action == "listData"){
-				list_all_records();
-			}
-			else if(request.action == "getDetail"){
-				get_vocab_details(request.vocab);
-			}
-			else if(request.action == "setMastered"){
-				update_mastery(request.vocab, true);
-			}
-			else if(request.action == "setNew"){
-				update_mastery(request.vocab, false);
-			}
-			else if(request.action == "delVocab"){
-				delete_record(request.vocab);
-			}
+		else if(request.action == "listData") {
+			list_all_records();
+		}
+		else if(request.action == "getDetail") {
+			get_vocab_details(request.vocab);
+		}
+		else if(request.action == "setMastered") {
+			update_mastery(request.vocab, 4);
+		}
+		else if(request.action == "setNew") {
+			update_mastery(request.vocab, 0);
+		}
+		else if(request.action == "delVocab") {
+			delete_record(request.vocab);
+		}
+		else if(request.action == "getQuiz") {
+			get_quiz();
+		}
+		else if(request.action == "updateMastery") {
+			update_mastery(request.vocab, request.mastery, true);
 		}
 	}
 );
