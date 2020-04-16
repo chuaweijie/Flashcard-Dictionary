@@ -20,6 +20,7 @@ chrome.runtime.onMessage.addListener(
 //instruct carousel not to cycle after clicking next. 
 $('.carousel').carousel({interval:false});
 
+$('#btnCloseTab').on("click", closeTabHandler);
 
 function generateTest(item, index){
 	$('<li data-target="#carouselQuiz" data-slide-to="'+index+'"></li>').appendTo('.carousel-indicators');
@@ -36,6 +37,7 @@ function generateTest(item, index){
 
 function submitHandler(e){
 	let len = answerKeys.length;
+	$('<div class="table-responsive"><table id="vocabTable" aria-hidden="true" class="table table-striped pl-2 pr-2"><thead><tr><th>Definition</th><th class="text-center">Vocabulary</th><th class="text-center">Answer</th></tr></thead><tbody id="vocabTableBody"></tbody></table></div>').appendTo("body");
 	for (let i = 0; i < len; i++ ) {
 		var ans = $('#a' + i).val().toLowerCase();
 		let newMastery;
@@ -44,16 +46,21 @@ function submitHandler(e){
 			if (newMastery > 4) {
 				newMastery = 0;
 			}
+			$('<tr><td>'+answerKeys[i].definition+'</td><td class="text-center">'+answerKeys[i].vocab+'</td><td class="table-success text-center">'+ans+'</td></tr>').appendTo("#vocabTableBody");
 		}
 		else {
 			newMastery = answerKeys[i].mastery - 1;
 			if (newMastery < 0) {
 				newMastery = 0;
 			}
+			$('<tr><td>'+answerKeys[i].definition+'</td><td class="text-center">'+answerKeys[i].vocab+'</td><td class="table-danger text-center">'+ans+'</td></tr>').appendTo("#vocabTableBody");
 		}
 		chrome.runtime.sendMessage({action:"updateMastery", vocab:answerKeys[i].vocab, mastery:newMastery});
 	}
-	//check all the answers. 
-	//remove carouselQuiz
-	//Generate the result list with button to close this tab or go to word list
+	$("#carouselQuiz").remove();
+	$("#vocabTable").attr("aria-hidden","false");
+}
+
+function closeTabHandler(e) {
+	window.top.close();
 }
