@@ -3,6 +3,7 @@ var answerKeys;
 //Sending trigger to background.js to get data. 
 chrome.runtime.sendMessage({action:"getQuiz"});
 
+//This handles the data that is returned after sending getQuiz request to background.js
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		if(sender.url == null){
@@ -10,6 +11,7 @@ chrome.runtime.onMessage.addListener(
 				$('#modalNoVocab').modal('show');
 			}
 			else {
+				//reset the array to empty
 				answerKeys = [];
 				answerKeys = answerKeys.concat(request.entries);
 				answerKeys.forEach(generateTest);
@@ -22,6 +24,7 @@ $('.carousel').carousel({interval:false});
 
 $('#btnCloseTab').on("click", closeTabHandler);
 
+//This is the function that iterates through all the items returned from background.js and display them in the view.
 function generateTest(item, index){
 	$('<li data-target="#carouselQuiz" data-slide-to="'+index+'"></li>').appendTo('.carousel-indicators');
 	if(index == answerKeys.length - 1) {
@@ -35,12 +38,13 @@ function generateTest(item, index){
 	}
 }
 
+//This handles the click on the last slide to submit the data. It will also handle the checking and sending the data to background.js
 function submitHandler(e){
 	let len = answerKeys.length;
 	$('<div class="table-responsive"><table id="vocabTable" aria-hidden="true" class="table table-striped pl-2 pr-2"><thead><tr><th>Definition</th><th class="text-center">Vocabulary</th><th class="text-center">Answer</th></tr></thead><tbody id="vocabTableBody"></tbody></table></div>').appendTo("body");
 	for (let i = 0; i < len; i++ ) {
 		var ans = $('#a' + i).val().toLowerCase();
-		let newMastery;
+		var newMastery;
 		if(answerKeys[i].vocab.toLowerCase().localeCompare(ans) == 0) {
 			newMastery = answerKeys[i].mastery + 1;
 			if (newMastery > 4) {
@@ -61,6 +65,7 @@ function submitHandler(e){
 	$("#vocabTable").attr("aria-hidden","false");
 }
 
+//Closes the current tab when user clickes the close tab button.
 function closeTabHandler(e) {
 	window.top.close();
 }

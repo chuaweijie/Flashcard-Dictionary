@@ -1,3 +1,4 @@
+//This returns the style and mastery status to format and display. 
 function getLevelObj(mastery){
 	if (mastery == 0){
 		return {style:"badge badge-danger mastery", status:"New"};
@@ -16,6 +17,7 @@ function getLevelObj(mastery){
 	}
 }
 
+//This is the code for real time filter search as the user types
 function filterSearch(){
 	let filter = document.getElementById("vocabSearch").value.toLowerCase();
 	let cards = document.getElementsByClassName("col mb-4");
@@ -31,6 +33,7 @@ function filterSearch(){
 	}
 }
 
+//This is triggers the logic to change the word to mastered. It sends a request to update the db and updates the UI
 document.getElementById("modalBtnMastered").addEventListener("click", function(e){
 	let vocab = document.getElementById("modalVocab").innerHTML;
 	let btnMastered = document.getElementById("modalBtnMastered");
@@ -52,13 +55,14 @@ document.getElementById("modalBtnMastered").addEventListener("click", function(e
 	
 }, false);
 
+//This launches the modal for delete confirmation
 document.getElementById("modalBtnDelete").addEventListener("click", function(e){
 	let vocab = document.getElementById("modalVocab").innerHTML;
 	let h5Title = document.getElementById("confirmationTitle");
 	h5Title.replaceChild(document.createTextNode('Are you sure you want to delete "' + vocab + '"?'), h5Title.childNodes[0]);
 }, false);
 
-
+//This deletes the vocab. It updates the DB and the UI.
 document.getElementById("btnConfirmDel").addEventListener("click", function(e){
 	let vocab = document.getElementById("modalVocab").innerHTML;
 	let cardVocab = document.getElementById(vocab);
@@ -118,6 +122,7 @@ chrome.runtime.onMessage.addListener(
 			if(request.NULL){
 				console.log("No Data");
 			}
+			//handles the returned data of all vocabs
 			else if (request.type == "all"){
 				//Create the HTML elements needed.
 				let divCol = document.createElement("div");
@@ -161,6 +166,7 @@ chrome.runtime.onMessage.addListener(
 				var vocabGrid = document.getElementById("vocabCards")
 				vocabGrid.appendChild(divCol);
 			}
+			//handles the returned data of vocab details. 
 			else if(request.type = "vocabDetails"){
 				let modalVocab = document.getElementById("modalVocab");
 				let modalBody = document.getElementById("modalBody");

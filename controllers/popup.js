@@ -1,9 +1,9 @@
+//Sync the enabled status of this extension for all machines of the users
 chrome.storage.sync.get('extensionEnabled', function(result) {
 	let btnOn = document.getElementById("btnOn");
 	let btnOff = document.getElementById("btnOff");
 	let labelOn = document.getElementById("label-on");
 	let labelOff = document.getElementById("label-off");
-	console.log(result.extensionEnabled);
 	if (result.extensionEnabled){
 		btnOn.checked = true;
 		btnOff.checked = false;
@@ -21,9 +21,9 @@ chrome.storage.sync.get('extensionEnabled', function(result) {
 document.getElementById("btnOn").addEventListener("click", toggleHandler);
 document.getElementById("btnOff").addEventListener("click", toggleHandler);
 
+//Update the on or off status of the extension for all the machines of the user
 function toggleHandler(e) {
 	let source = e.srcElement || e.originalTarget;
-	console.log(source.id);
 	let btnOn = document.getElementById("btnOn");
 	let btnOff = document.getElementById("btnOff");
 	let labelOn = document.getElementById("label-on");
@@ -34,7 +34,6 @@ function toggleHandler(e) {
 		labelOff.className = "btn btn-outline-danger";	
 		btnOn.checked = false;
 		btnOff.checked = true;
-		console.log("btnOn");
 	}
 	else if(source.id == "btnOff") {
 		chrome.storage.sync.set({extensionEnabled: false});
@@ -44,6 +43,4 @@ function toggleHandler(e) {
 		btnOff.checked = false;
 		console.log("btnOff");
 	}
-	console.log("btnOn : "+btnOn.checked);
-	console.log("btnOff : "+btnOff.checked);
 }

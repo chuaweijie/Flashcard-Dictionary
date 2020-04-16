@@ -1,6 +1,7 @@
 //Variable used to turn on debug mode
 var debug = false;
 
+//A function to initialize the DB before it is ready to use. 
 function initialize_indexedDB(){
 	var dbRequest = indexedDB.open("FlashcardDictionary", 1);
 	dbRequest.onerror = function(event) {
@@ -27,6 +28,7 @@ function initialize_indexedDB(){
 	return dbRequest;
 }
 
+//Logic to insert new records after a search is performed
 function insert_record(request){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
@@ -83,6 +85,7 @@ function insert_record(request){
   	};
 }
 
+//delete the records from DB
 function delete_record(vocab){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
@@ -104,12 +107,14 @@ function delete_record(vocab){
   	};
 }
 
+//helper function to send messages to each page
 function send_msg(dataJSON, pageName){
 	chrome.tabs.query({url:"chrome-extension://*/views/"+pageName+".html"}, function(tabs){
 		chrome.tabs.sendMessage(tabs[0].id, dataJSON);
 	});
 }
 
+//function to list all the vocabulary
 function list_all_records(){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
@@ -141,6 +146,7 @@ function list_all_records(){
     }
 }
 
+//function to get all asoociated data of one vocabulary.
 function get_vocab_details(vocab){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
@@ -162,6 +168,7 @@ function get_vocab_details(vocab){
     }	
 }
 
+//function to update the mastery when the mastered button is clicked or when a quiz is completed.
 function update_mastery(vocab, mastery, updateTestTime = false){
 	var dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
@@ -204,7 +211,8 @@ function update_mastery(vocab, mastery, updateTestTime = false){
     	}
   	};
 }
- 
+
+//function to get the available quiz data for the quiz view. 
 function get_quiz(){
 	let dbRequest = initialize_indexedDB();
 	dbRequest.onerror = function(event) {
@@ -275,6 +283,7 @@ function get_quiz(){
 
 //Code to launch options page or onboarding page if this is the user's first time. 
 //We can also use this code to display change log after update. 	
+//Welcome page not yet implemented.
 if (localStorage['lastVersionUsed'] != '1') {
 	localStorage['lastVersionUsed'] = '1';
 	initialize_indexedDB();

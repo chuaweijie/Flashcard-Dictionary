@@ -217,12 +217,6 @@ function createDiv(info, selectedText) {
   meaning.style = "margin-top: 10px";
   meaning.textContent = "Please Wait...";
 
-  /*
-  var audio = document.createElement("div");
-  audio.className = "audio";
-  audio.innerHTML = "&nbsp;";
-  audio.style.display = "none";*/
-
   //Link for users to go for more information
   var moreInfo =document.createElement("a");
   moreInfo.href = `https://www.google.com/search?hl=en&q=define+${selectedText}`;
