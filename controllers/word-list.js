@@ -15,6 +15,9 @@ function getLevelObj(mastery){
 	else if (mastery == 4){
 		return {style:"badge badge-success mastery", status:"Mastered"};
 	}
+	else if (mastery == 5){
+		return {style:"badge badge-success mastery", status:"Mastered"};
+	}
 }
 
 //This is the code for real time filter search as the user types

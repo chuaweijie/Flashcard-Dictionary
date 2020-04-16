@@ -253,11 +253,11 @@ function get_quiz(){
     				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}
-    			else if (mastery == 3 && (lastTestTime < (today - month))){
+    			else if (mastery == 4 && (lastTestTime < (today - month))){
     				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}
-    			else{
+    			else if (mastery != 5) {
     				finalJSON.entries.push(dataJSON);
     				sentData++;
     			}

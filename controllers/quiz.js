@@ -47,8 +47,8 @@ function submitHandler(e){
 		var newMastery;
 		if(answerKeys[i].vocab.toLowerCase().localeCompare(ans) == 0) {
 			newMastery = answerKeys[i].mastery + 1;
-			if (newMastery > 4) {
-				newMastery = 0;
+			if (newMastery > 5) {
+				newMastery = 5;
 			}
 			$('<tr><td>'+answerKeys[i].definition+'</td><td class="text-center">'+answerKeys[i].vocab+'</td><td class="table-success text-center">'+ans+'</td></tr>').appendTo("#vocabTableBody");
 		}
