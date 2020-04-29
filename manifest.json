@@ -33,22 +33,13 @@
 		"persistent": false
 	},
 	"content_scripts": [{
-      "matches": [
-        "<all_urls>"
-      ],
-      "all_frames": true,
+      "matches": ["<all_urls>"],
       "js": [
         "controllers/content_script.js"
       ]
     }],
-    "incognito": "split",
-    "options_ui": {
-    	"page": "views/options.html", 
-    	"open_in_tab": false
-    },
     "permissions": [
-    	"alarms",
-    	"notifications",
-    	"storage"
+    	"storage",
+    	"https://*.dictionaryapi.dev/"
     ]
 }
