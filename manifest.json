@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Flashcard Dictionary",
-	"version": "0.0.0.1",
+	"version": "0.0.0.2",
 	"default_locale": "en",
 	"description": "This Chrome extension enables highlight to search functionality while saving the searched words into flash cards",
 	"icons": {
@@ -12,6 +12,7 @@
 		"72": "views/images/dictionary-logo-72.png",
 		"96": "views/images/dictionary-logo-96.png",
 		"120": "views/images/dictionary-logo-120.png",
+		"128": "icon_128.png",
 		"240": "views/images/dictionary-logo-240.png"
 	},
 	"browser_action": {
