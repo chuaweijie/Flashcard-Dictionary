@@ -41,6 +41,7 @@
     }],
     "permissions": [
     	"storage",
-    	"https://*.dictionaryapi.dev/"
+    	"https://*.dictionaryapi.dev/",
+    	"tabs"
     ]
 }
