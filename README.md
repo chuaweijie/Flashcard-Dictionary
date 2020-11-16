@@ -1,4 +1,4 @@
-# Flashcard Dictionary
+# [Flashcard Dictionary](https://chrome.google.com/webstore/detail/flashcard-dictionary/mgnohlhmgmebmnaanlainjekgdoaodjb?hl=en)
 This is a Chrome extension with the aim of helping its user to get a quick understanding of a new vocabulary and then test him or her understanding at a later date. 
 
 ## Modules
